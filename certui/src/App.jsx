@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { BrowserProvider, Contract } from 'ethers';
+import cert from './assets/Cert.json'
 
 
 import './App.css'
@@ -27,14 +29,37 @@ function App() {
     setFormData((prev)=>({...prev,[name]:value}))
   }
 
- 
+  const provider = new BrowserProvider(window.ethereum);
+
+  const connectMetamask = async()=>{
+    await provider.send("eth_requestAccounts")
+    const signer =await provider.getSigner();
+    console.log("Suucessfully connected to", signer.address)
+  }
+
+  const handleIssue=async()=>{
+    const signer = await provider.getSigner()
+    const contractInstance = new Contract(cert.ContractAddress,cert.abi,signer)
+    const txreceipt = await contractInstance.issue(formData.cid,formData.cname,formData.course,formData.grade,formData.date)
+    await txreceipt.wait();
+    console.log("The transaction hash is",txreceipt.hash)
+  }
+
+ const handleGetCertificate = async()=>{
+  const signer = await provider.getSigner();
+  const contractInstance = new Contract(cert.ContractAddress,cert.abi,signer)
+  const cid = document.getElementById("certId").value
+  const certDetails = await contractInstance.Certificates(cid)
+  console.log("Certificate Details",certDetails)
+  setOutput(`Certificate ID:${certDetails[0]} Candidate Name:${certDetails[1]} Course:${certDetails[2]} Grade:${certDetails[3]} Date:${certDetails[4]}`)
+ }
  
   
 
   return (
     < div className='m-4'>
     <div>
-     <input type='button' value='Connect To Metamask'  className=' border-2 bg-sky-500 rounded-full border-transparent p-3 '/>
+     <input type='button' value='Connect To Metamask' onClick={connectMetamask} className=' border-2 bg-sky-500 rounded-full border-transparent p-3 '/>
     </div>
     <div>
       <p className='font-bold m-4'>Enter Certificate Details</p>
@@ -65,7 +90,7 @@ function App() {
     </div>
 
     <div className='m-4'>
-      <input type='button' className=' border-2 bg-sky-500 rounded-full border-transparent p-3 '  value='Issue Certificate'/>
+      <input type='button' className=' border-2 bg-sky-500 rounded-full border-transparent p-3 ' onClick={handleIssue}  value='Issue Certificate'/>
     </div>
 
     </div>
@@ -79,7 +104,7 @@ function App() {
         <input type='text' id='certId' name='certId'className='border border-black'/>
       </div>
       <div>
-        <input type='button' value='Get Certificate' className=' border-2 bg-sky-500 rounded-full border-transparent p-3 ' />
+        <input type='button' value='Get Certificate' onClick={handleGetCertificate} className=' border-2 bg-sky-500 rounded-full border-transparent p-3 ' />
       </div>
       <div>
         <p>{output}</p>
