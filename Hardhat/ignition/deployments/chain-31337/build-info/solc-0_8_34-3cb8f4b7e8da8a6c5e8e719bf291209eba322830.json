@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_34-3cb8f4b7e8da8a6c5e8e719bf291209eba322830",
+  "solcVersion": "0.8.34",
+  "solcLongVersion": "0.8.34+commit.80d5c536",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.18.0"
+  },
+  "userSourceNameMap": {
+    "contracts/Cert.sol": "project/contracts/Cert.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "osaka",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/Cert.sol": {
+        "content": "//SPDX-License-Identifier:MIT\n\npragma solidity 0.8.34;\n\ncontract Cert {\n\n    address admin;\n    struct Certificate {\n        uint256 cid;\n        string cname;\n        string course;\n        string grade;\n        string date;\n    }\n\n    constructor(){\n        admin = msg.sender;\n    }\n\n    modifier onlyAdmin(){\n        require(msg.sender == admin,\"Unauthorized access\");\n        _;\n    }\n\n    mapping(uint256 => Certificate)public Certificates;\n\n    event Issued(string course,uint256 cid, string grade);\n\n    function issue(\n        uint256 _cid,\n        string memory _cname,\n        string memory _course,\n        string memory _grade,\n        string memory _date\n    ) public onlyAdmin() {\n\n        Certificates[_cid] = Certificate(_cid, _cname, _course, _grade, _date);\n\n        emit Issued(_course,_cid,_grade);\n\n    }\n}"
+      }
+    }
+  }
+}
