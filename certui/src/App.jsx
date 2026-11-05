@@ -49,6 +49,7 @@ function App() {
   const signer = await provider.getSigner();
   const contractInstance = new Contract(cert.ContractAddress,cert.abi,signer)
   const cid = document.getElementById("certId").value
+  console.log("Certificate Id",cid)
   const certDetails = await contractInstance.Certificates(cid)
   console.log("Certificate Details",certDetails)
   setOutput(`Certificate ID:${certDetails[0]} Candidate Name:${certDetails[1]} Course:${certDetails[2]} Grade:${certDetails[3]} Date:${certDetails[4]}`)
